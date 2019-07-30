@@ -1,2 +1,2 @@
 # Portfolio
-A place where I keep my work.
+This repository will be where I keep my work/code (it's obviously a "Portfolio").
