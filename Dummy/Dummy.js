@@ -76,7 +76,7 @@ function mousePressed() {
     boxes.push(box);
   } else if (mouseButton === LEFT) {//Drag stuff around
     for (let i = 0; i < boxes.length; i++) {
-      /*if (((mouseX-offsetX)/10 >= 0 || (mouseX-offsetX)/10 < 0) && ((mouseY-offsetY)/10 || (mouseY-offsetY)/10)) {
+      /*if (mouseX-offsetX)/10 >= 0 && (mouseX-offsetX)/10 < 0) && (mouseY-offsetY)/10 >= 0 && (mouseY-offsetY)/10 < 0) {
         let mjd = new b2MouseJointDef();
         mjd.dampingRatio = 0.9;
         mjd.frequencyHz = 5;
