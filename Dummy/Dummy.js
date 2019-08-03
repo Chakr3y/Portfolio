@@ -14,18 +14,22 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
   b2Joint = Box2D.Dynamics.Joints.b2Joint, 
   b2MouseJoint = Box2D.Dynamics.Joints.b2MouseJoint;
 
+var canvas;
+
 var world;
 let boxes = [];
 let ground = [];
 var offsetX = 0;
 var offsetY = 0;
+var mj;
+
+//Visual settings
+var disAABB = false;
 
 function setup() {
-  var canvas = createCanvas(600, 400);
+  canvas = createCanvas(600, 400);
   var shifted = false;
   rectMode(CENTER);
-  ellipseMode(RADIUS);
-  var mj = false;
   
   //World setup
   var gravity = new b2Vec2(0, 20);
@@ -58,33 +62,42 @@ function draw() {
   //Display stuff
   for (let i = 0; i < ground.length; i++) {
     ground[i].display();
+    if (disAABB) {
+      ground[i].displayAABB();
+    }
   }
   
   for (let i = 0; i < boxes.length; i++) {
     boxes[i].display();
+    if (disAABB) {
+      boxes[i].displayAABB();
+    }
   }
   
-  /*if (mj) {
+  if (mj) {
     let target = mj.GetTarget();
     line(mouseX, mouseY, target.x, target.y);
-  }*/
+  }
 }
 
 function mousePressed() {
   if (mouseButton === RIGHT) {//Make new boxes
     let box = new Box(createVector(mouseX-offsetX, mouseY-offsetY), color(random(0, 255), random(0, 255), random(0, 255)));
+    //let box = new Circle(createVector(mouseX-offsetX, mouseY-offsetY), 20, color(random(0, 255), random(0, 255), random(0, 255)));
     boxes.push(box);
   } else if (mouseButton === LEFT) {//Drag stuff around
     for (let i = 0; i < boxes.length; i++) {
-      /*if (mouseX-offsetX)/10 >= 0 && (mouseX-offsetX)/10 < 0) && (mouseY-offsetY)/10 >= 0 && (mouseY-offsetY)/10 < 0) {
+      //if ((mouseX-offsetX)/10 >= 0 && (mouseX-offsetX)/10 < 0 && (mouseY-offsetY)/10 >= 0 && (mouseY-offsetY)/10 < 0) {
+      if (boxes[i].fixture.TestPoint(new b2Vec2(mouseX, mouseY))) {
         let mjd = new b2MouseJointDef();
         mjd.dampingRatio = 0.9;
         mjd.frequencyHz = 5;
-        mjd.maxForce = 1000*body.GetMass();
-        mjd.target.Set(mouseX, mouseY);
+        mjd.maxForce = 1000*boxes[i].body.GetMass();
+        mjd.target.Set(boxes[i].body.GetPosition());
         
+        console.log("e");
         mj = world.CreateJoint(mjd);
-      }*/
+      }
     }
   }
 }
