@@ -11,8 +11,12 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
   b2CircleShape = Box2D.Collision.Shapes.b2CircleShape, 
   b2JointDef = Box2D.Dynamics.Joints.b2JointDef, 
   b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef, 
+  b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef, 
+  b2WeldJointDef = Box2D.Dynamics.Joints.b2WeldJointDef, 
   b2Joint = Box2D.Dynamics.Joints.b2Joint, 
-  b2MouseJoint = Box2D.Dynamics.Joints.b2MouseJoint;
+  b2MouseJoint = Box2D.Dynamics.Joints.b2MouseJoint, 
+  b2RevoluteJoint = Box2D.Dynamics.Joints.b2RevoluteJoint, 
+  b2WeldJoint = Box2D.Dynamics.Joints.b2WeldJoint;
 
 var canvas;
 
@@ -24,7 +28,7 @@ var offsetY = 0;
 var mj;
 
 //Visual settings
-var disAABB = false;
+var disAABB = true;
 
 function setup() {
   canvas = createCanvas(600, 400);
@@ -74,9 +78,12 @@ function draw() {
     }
   }
   
+  //Update mouse joint
   if (mj) {
     let target = mj.GetTarget();
-    line(mouseX, mouseY, target.x, target.y);
+    line(mouseX-offsetX, mouseY-offsetY, target.x*10, target.y*10);
+    let mw = new b2Vec2((mouseX-offsetX)/10, (mouseY-offsetY)/10);
+    mj.SetTarget(mw);
   }
 }
 
@@ -87,15 +94,18 @@ function mousePressed() {
     boxes.push(box);
   } else if (mouseButton === LEFT) {//Drag stuff around
     for (let i = 0; i < boxes.length; i++) {
-      //if ((mouseX-offsetX)/10 >= 0 && (mouseX-offsetX)/10 < 0 && (mouseY-offsetY)/10 >= 0 && (mouseY-offsetY)/10 < 0) {
-      if (boxes[i].fixture.TestPoint(new b2Vec2(mouseX, mouseY))) {
+      if (boxes[i].body.GetFixtureList().TestPoint(new b2Vec2((mouseX-offsetX)/10, (mouseY-offsetY)/10))) {
         let mjd = new b2MouseJointDef();
+        
+        mjd.bodyA = world.GetGroundBody();
+        mjd.bodyB = boxes[i].body;
+        
         mjd.dampingRatio = 0.9;
         mjd.frequencyHz = 5;
         mjd.maxForce = 1000*boxes[i].body.GetMass();
-        mjd.target.Set(boxes[i].body.GetPosition());
         
-        console.log("e");
+        mjd.target.Set(new b2Vec2((mouseX-offsetX)/10, (mouseY-offsetY)/10));
+        
         mj = world.CreateJoint(mjd);
       }
     }
@@ -103,7 +113,7 @@ function mousePressed() {
 }
 
 function mouseReleased() {
-  if (mouseButton === LEFT && mj) {
+  if (mouseButton === LEFT && mj) {//Destroy mouse joint on release
     world.DestroyJoint(mj);
     mj = false;
   }
