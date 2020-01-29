@@ -20,12 +20,14 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 
 var canvas;
 
-var world;
-let boxes = [];
-let ground = [];
-var offsetX = 0;
-var offsetY = 0;
-var mj;
+var world; //Box2D world
+var tool; //Selected tool
+let boxes = []; //Boxes
+let bounds = []; //Static bodies
+var offsetX = 0; //X offset for scrolling
+var offsetY = 0; //Y offset for scrolling
+var worldMouse; //Position of mouse in world
+var mj; //Mouse joint for dragging
 
 //Visual settings
 var disAABB = true;
@@ -33,6 +35,7 @@ var disAABB = true;
 function setup() {
   canvas = createCanvas(600, 400);
   var shifted = false;
+  worldMouse = createVector();
   rectMode(CENTER);
   
   //World setup
@@ -41,13 +44,24 @@ function setup() {
   world = new b2World(gravity, doSleep);
   
   //Create some ground
-  ground.push(new Boundary(createVector(width/2, height-(height/32)), createVector(width, height/16), 0));
+  bounds.push(new Boundary(createVector(width/2, height-(height/32)), createVector(width, height/16), 0));
 }
 
 function draw() {
   background(50);//Background
   translate(offsetX, offsetY);//Translate everything by our scroll offset
+  worldMouse.x = mouseX-offsetX;
+  worldMouse.y = mouseY-offsetY;
   world.Step(1/30, 10, 10);//Make Box2D move forward in time
+  
+  //Tool selection
+  if (keyCode == 68) {//D rag
+    tool = "drag";
+  } else if (keyCode == 66) {//B ox
+    tool = "box";
+  } else {
+    tool = tool;
+  }
   
   //Scrolling mechanism
   if (keyIsDown(SHIFT)) {
@@ -64,10 +78,10 @@ function draw() {
   }
   
   //Display stuff
-  for (let i = 0; i < ground.length; i++) {
-    ground[i].display();
+  for (let i = 0; i < bounds.length; i++) {
+    bounds[i].display();
     if (disAABB) {
-      ground[i].displayAABB();
+      bounds[i].displayAABB();
     }
   }
   
@@ -78,36 +92,46 @@ function draw() {
     }
   }
   
-  //Update mouse joint
+  //Update & Display mouse joint
   if (mj) {
     let target = mj.GetTarget();
-    line(mouseX-offsetX, mouseY-offsetY, target.x*10, target.y*10);
-    let mw = new b2Vec2((mouseX-offsetX)/10, (mouseY-offsetY)/10);
+    line(worldMouse.x, worldMouse.y, target.x*10, target.y*10);
+    let mw = new b2Vec2(worldMouse.x/10, worldMouse.y/10);
     mj.SetTarget(mw);
   }
 }
 
 function mousePressed() {
-  if (mouseButton === RIGHT) {//Make new boxes
-    let box = new Box(createVector(mouseX-offsetX, mouseY-offsetY), color(random(0, 255), random(0, 255), random(0, 255)));
-    //let box = new Circle(createVector(mouseX-offsetX, mouseY-offsetY), 20, color(random(0, 255), random(0, 255), random(0, 255)));
-    boxes.push(box);
-  } else if (mouseButton === LEFT) {//Drag stuff around
-    for (let i = 0; i < boxes.length; i++) {
-      if (boxes[i].body.GetFixtureList().TestPoint(new b2Vec2((mouseX-offsetX)/10, (mouseY-offsetY)/10))) {
-        let mjd = new b2MouseJointDef();
-        
-        mjd.bodyA = world.GetGroundBody();
-        mjd.bodyB = boxes[i].body;
-        
-        mjd.dampingRatio = 0.9;
-        mjd.frequencyHz = 5;
-        mjd.maxForce = 1000*boxes[i].body.GetMass();
-        
-        mjd.target.Set(new b2Vec2((mouseX-offsetX)/10, (mouseY-offsetY)/10));
-        
-        mj = world.CreateJoint(mjd);
-      }
+  if (mouseButton === LEFT) {
+    if (tool == "box") {//Make boxes
+      let box = new Box(createVector(worldMouse.x, worldMouse.y), color(random(0, 255), random(0, 255), random(0, 255)));
+      boxes.push(box);
+    } else if (tool == "drag") {//Drag stuff around
+      let m = new b2AABB();//Set an area for mouse
+      m.lowerBound.Set(worldMouse.x/10 - 0.001, worldMouse.y/10 - 0.001);
+      m.upperBound.Set(worldMouse.x/10 + 0.001, worldMouse.y/10 + 0.001);
+      
+      let c = function(fixture) {
+        if (fixture.GetBody().GetType() != b2Body.b2_staticBody) {//If not a static body
+          let body = fixture.GetBody();
+          let mjd = new b2MouseJointDef();
+          
+          mjd.bodyA = world.GetGroundBody();
+          mjd.bodyB = body;
+          
+          mjd.collideConnected = true;
+          mjd.dampingRatio = 0.9;
+          mjd.frequencyHz = 5;
+          mjd.maxForce = 300.0*body.GetMass();
+          mjd.target.Set(worldMouse.x/10, worldMouse.y/10);
+          
+          mj = world.CreateJoint(mjd);
+          
+          body.SetAwake(true);
+          return false;
+        }
+      };
+      world.QueryAABB(c, m);//Test AABB overlap
     }
   }
 }
@@ -115,6 +139,6 @@ function mousePressed() {
 function mouseReleased() {
   if (mouseButton === LEFT && mj) {//Destroy mouse joint on release
     world.DestroyJoint(mj);
-    mj = false;
+    mj = null;
   }
 }
