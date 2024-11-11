@@ -1,0 +1,129 @@
+Algorithm:
+ Obtain key and classical music type from the user
+ A list containing all the notes starting from C to B (only 1 octave)
+ Based on the user's input, the list will now start from the user's key
+ Ask user for input of first chord (example : 1st chord)
+ Then randomizes which chord key to play next based on the key chord progressions
+ Find 10 more chords to play and end off back in the first chord, fifth chord (cadences)
+ Plays the chords in a rhythm that corresponds to the music type
+
+
+input(type key and classical music type) -- d , Waltz
+input(type chord)
+list = "c,c#,d,d#,e,f,f#,g,g#,a,a#,b,"
+pos = list.find("d")
+for i in range(pos,0,-1):
+  temp.append(list[i])
+temp -->  "c,c#"
+list+= temp --> "d,d#,e,f,f#,g,g#,a,a#,b,c,c#"
+first note = list[0] + list[4] +list[7]
+
+
+Major
+  0 = inputted note index
+  I chord : 0,4,7
+  ii chord : 2,5,9
+  iii chord : 4,7,11
+  IV chord : 5,9,0
+  V chord : 7,11,2
+  vi chord : 9,0,4
+  vii* chord : 11,2,5
+  Chord progression
+  1 -> any
+  2 -> 7,5
+  3 -> 6
+  4 -> 2,7
+  5 -> 1
+  6 -> 4,2
+  7 -> 1
+
+
+The overall purpose of the program is to produce music on its own. The way it will work is that the user will provide input in the form of a key signature. With the given key signature the program will then use the rules of chord progressions with randomization to produce a 10 chord progression. Over time, I will be able to develop a chord progression in the minor key as well as the major. The program will make use of a midi keyboard that can be coded with Python.
+
+functionality of program : 
+
+ The behavior of a program during execution and is often described by how a user interacts with it.  
+
+Our program will interact with the user through several different inputs. As our program is mainly used to compose music, it will first ask the user about the type of key the user would like to compose in. Afterwards, the program will ask the user what the first note of the song would. In the end, the functionality of the program would be that it would play a set of 10 chords with a restricted random order. 
+
+Describe the input and output of your program.  (alpha version)
+
+The input of our program would be to ask the user certain questions about the music piece. Since our program is about composing music and that music requires the specifics about the key, tempo, and how long the piece would be, these would be our inputs. We would ask the user for their preferences in these instances. On the other hand, our outputs would be the printed version of the chords that would be played as well as an audio output for each chord. 
+
+
+Date : 2 Feb, 2022 
+
+EQ_3.C Explain how the use of procedural abstraction manages complexity in a program. 
+(Reference:  Pages 87-89 of the Course and Exam Description)
+
+
+The use of procedural abstraction is wide. It provides a name for a process and allows a procedure to be used only knowing what it does, not how it does it. Moreover, procedural abstraction allows a solution to a large problem to be based on the solutions of smaller subproblems. Such is achieved through the creation of procedures to solve these subproblems. This also allows for certain program codes to be reused, which helps manage complexity. Finally, the use of procedural abstraction improves code readability as well as making the program more efficient.
+
+
+Date : 3 Feb, 2022 
+
+EQ-AAP.2-1  What does sequencing mean in programming?  
+EQ-AAP.2-2  Explain an algorithm that uses sequencing without using a programming language
+
+In programming, Sequencing is the application of each step of an algorithm in the order in which the code statements are given. In other words, a code statement is a part of program code that expresses an action to be carried out. Algorithms are, on the other hand, a finite set of instructions that accomplish a specific task. All algorithms can be expressed in terms of sequencing, selection, and iteration. 
+
+
+Date : 7 Feb. 2022 
+
+EQ-AAP-2-1  What does selection mean in programming?  Give an example to support your answers. 
+
+
+Selection determines which parts of an algorithm are executed based on a condition being true or false. Therefore, an example of this would be a boolean. 
+
+EQ-AAP-2-2  What does nested selection mean in programming?  Give an example to support your answers.   
+Nested conditional statements consist of conditional statements within conditional statements. An example of this would be an if statement within an if statement.
+
+
+Date : 09/02/2022
+EQ-5.B-1  Explain how programs can be used to gain insight and knowledge from data. Give an example to support your argument.
+
+Programs allow us to collect information, which is the collection of facts and patterns extracted from data. Data provides opportunities for identifying trends, making connections, and addressing problems. Digitally processed data may show correlation between variables. A correlation found in data doesn’t necessarily indicate that a causal relationship exists. Hence, more research is needed to understand the exact nature of the relationship. Metadata is data about data. For example, the piece of data may be an image, while the metadata may include the date of creation or the file size of the image.
+
+
+EQ-5.B-2  Write down what you already know about computing devices with sensors (e.g., cellphones, voice assistants, fitness devices) and how these devices collect data, and how these data could be combined to create assumptions about you!
+
+Computing devices with sensors range from cell phones, to smartphones, to digital fridges, to TVs, to a thermostat. Basically, anything that requires input is a computing device with sensors. These devices collect data through sensors and use that data as inputs. The inputs are then translated into the computing language and into the program to execute a specific command. More advanced devices can also create assumptions to further aid us in our daily lives. For example, smartphones may occasionally vibrate to indicate that a person has picked up the phone. This may be down through the data collection of the motion of the phone. Hence, this lights up the phone. 
+
+
+Date : 10/02/2022 
+
+Homework 
+EQ-Abs  How does using an abstraction make the program code easier to write, understand, or modify? 
+(Reference:  the Course and Exam Description)
+
+Incorporating elements of abstraction—by breaking problems down into interacting pieces, each with their own purpose—makes writing complex programs easier. Programmers need to think algorithmically and use abstraction to define and interpret processes that are used in a program. Data abstractions manage complexity in programs by giving a collection of data a name without referencing the specific details of the representation.
+
+
+Classwork: 
+There are a lot of keys and notes that can be played so they are all grouped into a list to manage complexity. The list also helps in the order of the notes so the program knows what notes come after another. Without it, we would have to manually tell the program every time
+what notes can come next we will have to retype all the notes everytime we want to use them.
+
+
+
+Date : 14/02/2022 
+Homework : 
+
+EQ-4.C-1  List all different errors that could happen when a program is run.
+
+Logic error
+Syntax error 
+Run-time error
+Overflow error
+
+
+EQ-4.C-2  What are effective ways to find and correct errors?
+
+Test cases 
+Hand tracing 
+Visualizations 
+Debuggers
+Adding extra output statements
+
+
+
+Classwork : 
